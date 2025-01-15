@@ -1,115 +1,158 @@
 #include <iostream>
-#include <string>
-using namespace std;
 
-const int MAX_FLIGHTS = 5; // Maximum number of flights
-const int MAX_SEATS = 5;   // Maximum seats per flight
+// Example Demo 1
 
-// Function prototypes
-void InitializeFlights(string flightTimes[], string passengerNames[][MAX_SEATS]);
-void DisplayFlights(const string flightTimes[], const string passengerNames[][MAX_SEATS]);
-void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS]);
-void CancelReservation(string flightTimes[], string passengerNames[][MAX_SEATS]);
-void DisplaySeats(const string& flightTime, const string passengerNames[]);
+int main()
+{
+	const int MAX_FLIGHTS_SCHED = 2, MAX_SEAT = 5;
 
-int main() {
-    string flightTimes[MAX_FLIGHTS];
-    string passengerNames[MAX_FLIGHTS][MAX_SEATS];
+	std::string reservation[MAX_FLIGHTS_SCHED][MAX_SEAT] = {
+		{"empty", "empty", "empty", "empty", "empty"},
+		{"empty", "empty", "empty", "empty", "empty"},
+	};
+	int choice, selectedFlight, selectedSeat;
 
-    InitializeFlights(flightTimes, passengerNames);
+	do
+	{
+		std::cout <<
+			"--Flight--\n"
+			"1. Reserve Flight\n"
+			"2. Cancel Flight\n"
+			"3. View Flight\n"
+			"0. Exit\n"
+			": ";
+		std::cin >> choice;
 
-    int choice;
-    do {
-        cout << "WELCOME TO MAJJ AIRLINES!\n";
-        cout << "Flight Reservation\n";
-        cout << "1. View Flights\n";
-        cout << "2. Reserve a Seat\n";
-        cout << "3. Cancel a Reservation\n";
-        cout << "0. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+		system("cls");
 
-        switch (choice) {
-        case 1:
-            system("cls");
-            DisplayFlights(flightTimes, passengerNames);
-            break;
-        case 2:
-            ReserveSeat(flightTimes, passengerNames);
-            break;
-        case 3:
-            system("cls");
-            CancelReservation(flightTimes, passengerNames);
-            break;
-        case 0:
-            system("cls");
-            cout << "Thank you for using the Flight Reservation System.\n";
-            break;
-        default:
-            system("cls");
-            cout << "Invalid choice. Try again.\n";
-        }
-        cout << endl;
-    } while (choice != 0);
+		switch (choice)
+		{
+		case 1:
+			std::cout <<
+				"--Select Flight--\n"
+				"1. AM Flight\n"
+				"2. PM Flight\n"
+				"0. Cancel\n"
+				": ";
+			std::cin >> selectedFlight;
 
-    return 0;
+			system("cls");
+
+			if (selectedFlight == 0) break;
+
+			selectedFlight--;
+			do {
+
+				std::cout << "--Select Seat--\n";
+				for (int i = 0; i < MAX_SEAT; i++)
+				{
+					std::cout << (i + 1) << ". " << reservation[selectedFlight][i] << "\n";
+				}
+				std::cout << ":";
+				std::cin >> selectedSeat;
+
+				selectedSeat--;
+
+				if (selectedSeat < 0 || selectedSeat >= MAX_SEAT) {
+					std::cout << "Please Selec from seats range\n\n\n";
+
+					system("pause");
+					system("cls");
+					continue;
+				}
+
+				if (reservation[selectedFlight][selectedSeat] == "empty") {
+					std::string name;
+
+					std::cout << "Enter your name: ";
+					std::cin >> name;
+					reservation[selectedFlight][selectedSeat] = name;
+
+					system("cls");
+					break;
+				}
+				else {
+					std::cout << "Please Selec from empty seats\n\n\n";
+
+					system("pause");
+					system("cls");
+				}
+			} while (true);
+
+			break;
+		case 2:
+			std::cout <<
+				"--Select Flight--\n"
+				"1. AM Flight\n"
+				"2. PM Flight\n"
+				"0. Cancel\n"
+				": ";
+			std::cin >> selectedFlight;
+
+
+			system("cls");
+
+			if (selectedFlight == 0) break;
+
+			selectedFlight--;
+			do {
+
+				std::cout << "--Select Seat--\n";
+				for (int i = 0; i < MAX_SEAT; i++)
+				{
+					std::cout << (i + 1) << ". " << reservation[selectedFlight][i] << "\n";
+				}
+				std::cout << ":";
+				std::cin >> selectedSeat;
+
+				selectedSeat--;
+
+				if (selectedSeat < 0 || selectedSeat >= MAX_SEAT) {
+					std::cout << "Please Selec from seats range\n\n\n";
+
+					system("pause");
+					system("cls");
+					continue;
+				}
+
+				if (reservation[selectedFlight][selectedSeat] == "empty") {
+					std::cout << "Please Selec from occupied seats\n\n\n";
+
+					system("pause");
+					system("cls");
+				}
+				else {
+					reservation[selectedFlight][selectedSeat] = "empty";
+
+					std::cout << "Seat are now empty\n\n\n";
+
+					system("pause");
+					system("cls");
+					break;
+				}
+			} while (true);
+
+			break;
+		case 3:
+			std::cout << "--AM Seats--\n";
+			for (int i = 0; i < MAX_SEAT; i++)
+			{
+				std::cout << (i + 1) << ". " << reservation[0][i] << "\n";
+			}
+
+			std::cout << "\n";
+
+			std::cout << "--PM Seats--\n";
+			for (int i = 0; i < MAX_SEAT; i++)
+			{
+				std::cout << (i + 1) << ". " << reservation[1][i] << "\n";
+			}
+
+			system("pause");
+			system("cls");
+			break;
+		default:
+			break;
+		}
+	} while (true);
 }
-
-// Initialize flight times and seats
-void InitializeFlights(string flightTimes[], string passengerNames[][MAX_SEATS]) {
-    for (int i = 0; i < MAX_FLIGHTS; ++i) {
-        flightTimes[i] = "Flight at " + to_string(9 + i) + ":00 AM";
-        for (int j = 0; j < MAX_SEATS; ++j) {
-            passengerNames[i][j] = ""; // Empty string indicates the seat is available
-        }
-    }
-}
-
-// Display all flights and their availability
-void DisplayFlights(const string flightTimes[], const string passengerNames[][MAX_SEATS]) {
-    cout << "Available Flights:\n";
-    for (int i = 0; i < MAX_FLIGHTS; ++i) {
-        int availableSeats = 0;
-        for (int j = 0; j < MAX_SEATS; ++j) {
-            if (passengerNames[i][j].empty()) availableSeats++;
-        }
-        cout << i + 1 << ". " << flightTimes[i] << " (Available Seats: " << availableSeats << ")\n";
-    }
-}
-
-// Reserve a seat on a selected flight
-void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS]) {
-    int flightChoice;
-    cout << "Select a flight (1-" << MAX_FLIGHTS << "): ";
-    cin >> flightChoice;
-
-    if (flightChoice < 1 || flightChoice > MAX_FLIGHTS) {
-        cout << "Invalid flight selection.\n";
-        return;
-    }
-
-    int flightIndex = flightChoice - 1;
-    DisplaySeats(flightTimes[flightIndex], passengerNames[flightIndex]);
-
-    int seatChoice;
-    cout << "Select a seat (1-" << MAX_SEATS << "): ";
-    cin >> seatChoice;
-
-    if (seatChoice < 1 || seatChoice > MAX_SEATS) {
-        cout << "Invalid seat selection.\n";
-        return;
-    }
-
-    int seatIndex = seatChoice - 1;
-    if (!passengerNames[flightIndex][seatIndex].empty()) {
-        cout << "Seat already reserved.\n";
-    }
-    else {
-        cout << "Enter your name: ";
-        cin.ignore();
-        getline(cin, passengerNames[flightIndex][seatIndex]);
-        cout << "Seat reserved successfully for " << passengerNames[flightIndex][seatIndex] << ".\n";
-    }
-}
-
-// Cancel a reservati
