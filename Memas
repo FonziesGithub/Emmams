@@ -6,18 +6,17 @@ const int MAX_FLIGHTS = 5; // Maximum number of flights
 const int MAX_SEATS = 5;   // Maximum seats per flight
 
 // Function prototypes
-void InitializeFlights(string flightTimes[], string passengerNames[][MAX_SEATS], bool isReserved[][MAX_SEATS]);
-void DisplayFlights(const string flightTimes[], const bool isReserved[][MAX_SEATS]);
-void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS], bool isReserved[][MAX_SEATS]);
-void CancelReservation(string flightTimes[], string passengerNames[][MAX_SEATS], bool isReserved[][MAX_SEATS]);
-void DisplaySeats(const string& flightTime, const string passengerNames[], const bool isReserved[]);
+void InitializeFlights(string flightTimes[], string passengerNames[][MAX_SEATS]);
+void DisplayFlights(const string flightTimes[], const string passengerNames[][MAX_SEATS]);
+void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS]);
+void CancelReservation(string flightTimes[], string passengerNames[][MAX_SEATS]);
+void DisplaySeats(const string& flightTime, const string passengerNames[]);
 
 int main() {
     string flightTimes[MAX_FLIGHTS];
     string passengerNames[MAX_FLIGHTS][MAX_SEATS];
-    bool isReserved[MAX_FLIGHTS][MAX_SEATS] = {false};
 
-    InitializeFlights(flightTimes, passengerNames, isReserved);
+    InitializeFlights(flightTimes, passengerNames);
 
     int choice;
     do {
@@ -33,14 +32,14 @@ int main() {
         switch (choice) {
         case 1:
             system("cls");
-            DisplayFlights(flightTimes, isReserved);
+            DisplayFlights(flightTimes, passengerNames);
             break;
         case 2:
-            ReserveSeat(flightTimes, passengerNames, isReserved);
+            ReserveSeat(flightTimes, passengerNames);
             break;
         case 3:
             system("cls");
-            CancelReservation(flightTimes, passengerNames, isReserved);
+            CancelReservation(flightTimes, passengerNames);
             break;
         case 0:
             system("cls");
@@ -57,30 +56,29 @@ int main() {
 }
 
 // Initialize flight times and seats
-void InitializeFlights(string flightTimes[], string passengerNames[][MAX_SEATS], bool isReserved[][MAX_SEATS]) {
+void InitializeFlights(string flightTimes[], string passengerNames[][MAX_SEATS]) {
     for (int i = 0; i < MAX_FLIGHTS; ++i) {
         flightTimes[i] = "Flight at " + to_string(9 + i) + ":00 AM";
         for (int j = 0; j < MAX_SEATS; ++j) {
-            passengerNames[i][j] = "";
-            isReserved[i][j] = false;
+            passengerNames[i][j] = ""; // Empty string indicates the seat is available
         }
     }
 }
 
 // Display all flights and their availability
-void DisplayFlights(const string flightTimes[], const bool isReserved[][MAX_SEATS]) {
+void DisplayFlights(const string flightTimes[], const string passengerNames[][MAX_SEATS]) {
     cout << "Available Flights:\n";
     for (int i = 0; i < MAX_FLIGHTS; ++i) {
         int availableSeats = 0;
         for (int j = 0; j < MAX_SEATS; ++j) {
-            if (!isReserved[i][j]) availableSeats++;
+            if (passengerNames[i][j].empty()) availableSeats++;
         }
         cout << i + 1 << ". " << flightTimes[i] << " (Available Seats: " << availableSeats << ")\n";
     }
 }
 
 // Reserve a seat on a selected flight
-void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS], bool isReserved[][MAX_SEATS]) {
+void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS]) {
     int flightChoice;
     cout << "Select a flight (1-" << MAX_FLIGHTS << "): ";
     cin >> flightChoice;
@@ -91,7 +89,7 @@ void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS], bool 
     }
 
     int flightIndex = flightChoice - 1;
-    DisplaySeats(flightTimes[flightIndex], passengerNames[flightIndex], isReserved[flightIndex]);
+    DisplaySeats(flightTimes[flightIndex], passengerNames[flightIndex]);
 
     int seatChoice;
     cout << "Select a seat (1-" << MAX_SEATS << "): ";
@@ -103,62 +101,15 @@ void ReserveSeat(string flightTimes[], string passengerNames[][MAX_SEATS], bool 
     }
 
     int seatIndex = seatChoice - 1;
-    if (isReserved[flightIndex][seatIndex]) {
+    if (!passengerNames[flightIndex][seatIndex].empty()) {
         cout << "Seat already reserved.\n";
     }
     else {
         cout << "Enter your name: ";
         cin.ignore();
         getline(cin, passengerNames[flightIndex][seatIndex]);
-        isReserved[flightIndex][seatIndex] = true;
         cout << "Seat reserved successfully for " << passengerNames[flightIndex][seatIndex] << ".\n";
     }
 }
 
-// Cancel a reservation
-void CancelReservation(string flightTimes[], string passengerNames[][MAX_SEATS], bool isReserved[][MAX_SEATS]) {
-    int flightChoice;
-    cout << "Select a flight (1-" << MAX_FLIGHTS << "): ";
-    cin >> flightChoice;
-
-    if (flightChoice < 1 || flightChoice > MAX_FLIGHTS) {
-        cout << "Invalid flight selection.\n";
-        return;
-    }
-
-    int flightIndex = flightChoice - 1;
-    DisplaySeats(flightTimes[flightIndex], passengerNames[flightIndex], isReserved[flightIndex]);
-
-    int seatChoice;
-    cout << "Select a seat to cancel (1-" << MAX_SEATS << "): ";
-    cin >> seatChoice;
-
-    if (seatChoice < 1 || seatChoice > MAX_SEATS) {
-        cout << "Invalid seat selection.\n";
-        return;
-    }
-
-    int seatIndex = seatChoice - 1;
-    if (!isReserved[flightIndex][seatIndex]) {
-        cout << "Seat is not reserved.\n";
-    }
-    else {
-        cout << "Reservation for " << passengerNames[flightIndex][seatIndex] << " has been canceled.\n";
-        isReserved[flightIndex][seatIndex] = false;
-        passengerNames[flightIndex][seatIndex] = "";
-    }
-}
-
-// Display seat availability for a flight
-void DisplaySeats(const string& flightTime, const string passengerNames[], const bool isReserved[]) {
-    cout << "Seats for " << flightTime << ":\n";
-    for (int i = 0; i < MAX_SEATS; ++i) {
-        cout << "Seat " << i + 1 << ": ";
-        if (isReserved[i]) {
-            cout << "Reserved (" << passengerNames[i] << ")\n";
-        }
-        else {
-            cout << "Available\n";
-        }
-    }
-}
+// Cancel a reservati
