@@ -1,168 +1,176 @@
-// Code Dash: Setting Up Records
-// Date: 2021-06-29
-// Problem: 3 Item Shop
-
 #include <iostream>
+#include <string>
 using namespace std;
 
-// Prototype Function
-string AcceptName();
-int ProductMenu(string productNames[], double productCosts[],
-                const int MAX_PRODUCT, string name);
-void Breakdown(string productNames[], double productCosts[],
-               const int MAX_PRODUCT, double totalRevenue);
-int AcceptsQuantity();
-void Border();
+const int MAX_FLIGHTS = 5; // Maximum number of flights
+const int MAX_SEATS = 5;   // Maximum seats per flight
 
-// Defined Function
-void OpeningGreetings() {
-  Border();
-  cout << "Welcome to my shop\n";
-  Border();
-}
+struct Seat {
+    string passengerName;
+    bool isReserved;
+};
 
-// Global Variable: Bad Code
-int badCode;
+struct Flight {
+    string flightTime;
+    Seat seats[MAX_SEATS];
+};
+
+// Function prototypes
+void InitializeFlights(Flight flights[], int flightCount);
+void DisplayFlights(Flight flights[], int flightCount);
+void ReserveSeat(Flight flights[], int flightCount);
+void CancelReservation(Flight flights[], int flightCount);
+void DisplaySeats(const Flight& flight);
 
 int main() {
-  // Local Variables of function main
-  const int MAX_PRODUCT = 5;
+    Flight flights[MAX_FLIGHTS];
+    InitializeFlights(flights, MAX_FLIGHTS);
 
-  string productNames[MAX_PRODUCT] = {"Apple", "Banana", "Carrot", "Donut",
-                                      "Eggplant"},
-         name;
-  double productCosts[MAX_PRODUCT] = {10.2, 9.3, 8.4, 12.1, 7.1},
-         totalRevenue = 0, totalCost = 0;
-  int productCounters[MAX_PRODUCT] = {0, 0, 0, 0, 0}, menuChoice;
+    int choice;
 
-  do {
-    // Local Variable of do while
-    int placeholder, payment, productChoice;
 
-    OpeningGreetings();
-    name = AcceptName();
-
-    // Built-in function
-    system("cls");
     do {
-      productChoice =
-          ProductMenu(productNames, productCosts, MAX_PRODUCT, name);
+        cout << "WELCOME TO MAJJ AIRLINES!\n";
+        cout << "Flight Reservation\n";
+        cout << "1. View Flights\n";
+        cout << "2. Reserve a Seat\n";
+        cout << "3. Cancel a Reservation\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        
 
-      switch (productChoice) {
-      case 1:
-        placeholder = AcceptsQuantity();
-        totalCost += (placeholder * productCosts[0]);
-        productCounters[0] += placeholder;
-        break;
-      case 2:
-        placeholder = AcceptsQuantity();
-        totalCost += (placeholder * productCosts[1]);
-        productCounters[1] += placeholder;
-        break;
-      case 3:
-        placeholder = AcceptsQuantity();
-        totalCost += (placeholder * productCosts[2]);
-        productCounters[2] += placeholder;
-        break;
-      case 4:
-        placeholder = AcceptsQuantity();
-        totalCost += (placeholder * productCosts[3]);
-        productCounters[3] += placeholder;
-        break;
-      case 5:
-        placeholder = AcceptsQuantity();
-        totalCost += (placeholder * productCosts[4]);
-        productCounters[4] += placeholder;
-        break;
-      case 0:
-        do {
-          cout << "Hi! " << name << " your total cost is " << totalCost << ": ";
-          cin >> payment;
-
-          if (totalCost > payment) {
-            cout << "Insufficient Payment\n";
-            // Built-in
-            system("pause");
+        switch (choice) {
+        case 1:
             system("cls");
-          } else {
-            if (totalCost < payment) {
-              cout << "Return " << (payment - totalCost) << "\n";
-              system("pause");
-              system("cls");
-            }
-            totalRevenue += totalCost;
-            totalCost = 0;
-          }
-        } while (totalCost > payment);
-        break;
-      default:
-        cout << "Incorrect input\n\n";
-        system("pause");
-        system("cls");
-        break;
-      }
-      system("cls");
-    } while (productChoice != 0);
+            DisplayFlights(flights, MAX_FLIGHTS);
 
-    system("cls");
+            break;
+        case 2:
+           
+            ReserveSeat(flights, MAX_FLIGHTS);
+            break;
+        case 3:
+            system("cls");
+            CancelReservation(flights, MAX_FLIGHTS);
+            break;
+        case 0:
+            system("cls");
+            cout << "Thank you for using the Flight Reservation System.\n";
+            break;
+        default:
+            system("cls");
+            cout << "Invalid choice. Try again.\n";
+        }
+        cout << endl;
+    } while (choice != 0);
 
-    cout << "Shop is not close (1)=yes (0)=0:";
-    cin >> menuChoice;
-
-    system("cls");
-  } while (menuChoice != 0);
-
-  Breakdown(productNames, productCosts, MAX_PRODUCT, totalRevenue);
-  system("pause");
-  return 0;
+    return 0;
 }
 
-string AcceptName() {
-  string name;
-
-  Border();
-  cout << "Enter your name:";
-  cin >> name;
-  Border();
-
-  return name;
+// Initialize flight times and seats
+void InitializeFlights(Flight flights[], int flightCount) {
+    for (int i = 0; i < flightCount; ++i) {
+        flights[i].flightTime = "Flight at " + to_string(9 + i) + ":00 AM";
+        for (int j = 0; j < MAX_SEATS; ++j) {
+            flights[i].seats[j].isReserved = false;
+        }
+    }
 }
 
-int ProductMenu(string productNames[], double productCosts[],
-                const int MAX_PRODUCT, string name) {
-  int productChoice;
-
-  Border();
-  cout << "Hi! " << name << " this is our menu:\n";
-  for (int i = 0; i < MAX_PRODUCT; i++) {
-    cout << (i + 1) << ". " << productNames[i] << " - " << productCosts[i]
-         << endl;
-  }
-  cout << "0. exit" << endl << ":";
-  cin >> productChoice;
-  Border();
-
-  return productChoice;
+// Display all flights and their availability
+void DisplayFlights(Flight flights[], int flightCount) {
+    cout << "Available Flights:\n";
+    for (int i = 0; i < flightCount; ++i) {
+        cout << i + 1 << ". " << flights[i].flightTime << " (Available Seats: ";
+        int availableSeats = 0;
+        for (const auto& seat : flights[i].seats) {
+            if (!seat.isReserved) availableSeats++;
+        }
+        cout << availableSeats << ")\n";
+    }
 }
 
-void Breakdown(string productNames[], double productCosts[],
-               const int MAX_PRODUCT, double totalRevenue) {
-  Border();
-  cout << "Total Sold Items:\n";
-  for (int i = 0; i < MAX_PRODUCT; i++) {
-    cout << (i + 1) << productNames[i] << " - " << productCosts[i] << endl;
-  }
-  cout << "Total Revenue: " << totalRevenue << endl;
-  Border();
+// Reserve a seat on a selected flight
+void ReserveSeat(Flight flights[], int flightCount) {
+    int flightChoice;
+    cout << "Select a flight (1-" << flightCount << "): ";
+    cin >> flightChoice;
+
+    if (flightChoice < 1 || flightChoice > flightCount) {
+        cout << "Invalid flight selection.\n";
+        return;
+    }
+
+    Flight& selectedFlight = flights[flightChoice - 1];
+    DisplaySeats(selectedFlight);
+
+    int seatChoice;
+    cout << "Select a seat (1-" << MAX_SEATS << "): ";
+    cin >> seatChoice;
+
+    if (seatChoice < 1 || seatChoice > MAX_SEATS) {
+        cout << "Invalid seat selection.\n";
+        return;
+    }
+
+    Seat& selectedSeat = selectedFlight.seats[seatChoice - 1];
+    if (selectedSeat.isReserved) {
+        cout << "Seat already reserved.\n";
+    }
+    else {
+        cout << "Enter your name: ";
+        cin.ignore();
+        getline(cin, selectedSeat.passengerName);
+        selectedSeat.isReserved = true;
+        cout << "Seat reserved successfully for " << selectedSeat.passengerName << ".\n";
+    }
 }
 
-int AcceptsQuantity() {
-  int placeholder;
+// Cancel a reservation
+void CancelReservation(Flight flights[], int flightCount) {
+    int flightChoice;
+    cout << "Select a flight (1-" << flightCount << "): ";
+    cin >> flightChoice;
 
-  cout << "Quantity: ";
-  cin >> placeholder;
+    if (flightChoice < 1 || flightChoice > flightCount) {
+        cout << "Invalid flight selection.\n";
+        return;
+    }
 
-  return placeholder;
+    Flight& selectedFlight = flights[flightChoice - 1];
+    DisplaySeats(selectedFlight);
+
+    int seatChoice;
+    cout << "Select a seat to cancel (1-" << MAX_SEATS << "): ";
+    cin >> seatChoice;
+
+    if (seatChoice < 1 || seatChoice > MAX_SEATS) {
+        cout << "Invalid seat selection.\n";
+        return;
+    }
+
+    Seat& selectedSeat = selectedFlight.seats[seatChoice - 1];
+    if (!selectedSeat.isReserved) {
+        cout << "Seat is not reserved.\n";
+    }
+    else {
+        cout << "Reservation for " << selectedSeat.passengerName << " has been canceled.\n";
+        selectedSeat.isReserved = false;
+        selectedSeat.passengerName = "";
+    }
 }
 
-void Border() { cout << "------------------------\n"; }
+// Display seat availability for a flight
+void DisplaySeats(const Flight& flight) {
+    cout << "Seats for " << flight.flightTime << ":\n";
+    for (int i = 0; i < MAX_SEATS; ++i) {
+        cout << "Seat " << i + 1 << ": ";
+        if (flight.seats[i].isReserved) {
+            cout << "Reserved (" << flight.seats[i].passengerName << ")\n";
+        }
+        else {
+            cout << "Available\n";
+        }
+    }
+}
